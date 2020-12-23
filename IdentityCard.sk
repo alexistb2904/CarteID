@@ -1,0 +1,267 @@
+#===========================
+#	 CARTE D'IDENTITE
+     #By alexistb2904#
+#===========================
+#	  Configuration
+#===========================
+options:
+	
+	version: 1.0
+	OpenIdentityCardWithBook: true #Ouvrir la carte d'identité quand on clique droit avec un livre dans la main
+	NameOfBookToOpenIndentityCard: &bCarte D'identité #Nom du livre qui va permettre d'ouvrir la carte (Fonctionne que si OpenIdentityCardWithBook est sur true)
+	1genre: Homme
+	2genre: Femme
+	3genre: Non-Binaire
+	
+#===========================
+#	     COMMANDES
+#===========================
+	setname: setname
+	setgenre: setgenre
+	openidentity: carteid
+	infocardplayer: info
+	resetidcardplayer: resetid
+	pickidcardplayer: remove
+	giveidcardplayer: give
+#===========================
+#	    PERMISSIONS
+#===========================
+	openidentityp: carteid.open
+	infocardplayerp: carteid.info
+	resetidcardplayerp: carteid.reset
+	pickidcardplayerp: carteid.pick
+	giveidcardplayerp: carteid.give
+#===========================
+#	     MESSAGES
+#===========================
+
+	#Messages Carte d'identité
+	carteid: &bCarte d'identité de %player%
+	
+	carteid.info1: Nom du citoyen : %{fnameid.%player%}% %{lnameid.%player%}%
+	
+	carteid.info2: Sexe : %{genreid.%player%}%
+	
+	carteid.info3: Métier : %{job.%player%}%
+	
+	carteid1: &bCarte d'identité de %{_list::%loop-value%}%
+	
+	carteid.info1b: Nom du citoyen : %{fnameid.%{_list::%loop-value%}%}% %{lnameid.%{_list::%loop-value%}%}%
+	
+	carteid.info2b: Sexe : %{genreid.%{_list::%loop-value%}%}%
+	
+	carteid.info3b: Métier : %{job.%{_list::%loop-value%}%}%
+	
+	carteidinfo: &cCette habitant n'a pas sa carte d'identité.
+	
+	carteidhaveinfo: &cCette habitant as déjà sa carte d'identité.
+	
+	carteidhaveinfop: &cLa carte d'identité de cette habitant à déjà été prise.
+	
+	carteidremove: &cVotre carte d'identité vous à été retiré aller voir un agent pour la récupérer.
+	
+	#Messages prise / en cours de prise
+	
+	pickarg2: &cTu doit définir le citoyen a qui tu veut enlever la carte.
+	
+	picksuccess: &aLa carte d'identité du citoyen %{fnameid.%arg 2%}% %{lnameid.%arg 2%}% à été prise.
+	
+	pickrecive: &cVotre carte d'identité vous a été prise par %{fnameid.%player%}% %{lnameid.%player%}%.
+	
+	#Messages don / en cours de don
+	
+	givearg2: &cTu doit définir le citoyen a qui tu veut redonner la carte.
+	
+	givesuccess: &aLa carte d'identité du citoyen %{fnameid.%arg 2%}% %{lnameid.%arg 2%}% lui à été remise.
+	
+	giverecive: &aVotre carte d'identité vous à été remise par %{fnameid.%player%}% %{lnameid.%player%}%.
+	
+	#Message erreur
+	nocarteid: &cTu n'as pas de carte d'identité fait /%{setnamec}% ou /%{setgenrec}% pour commencer ton aventure !
+	
+	noperm: &cTu n'a pas les qualification requise pour cette action. 
+	
+	namerequest: &cLe pseudo (pas prénom et nom) est requis pour reset sa carte d'identité
+	
+	noprenom:  &eVous n'avez pas spécifier de prénom pour votre carte d'identité.
+	
+	nonom: &eVous n'avez pas spécifier de nom de famille pour votre carte d'identité.
+	
+	nogenre: &eVous n'avez pas spécifier de genre pour votre carte d'identité.
+	
+	nogenred: &eVous n'avez pas spécifier de genre pour votre carte d'identité. Choissisez entre %{1genre}% ou %{2genre}% ou %{3genre}%
+	
+	#Message SetName , SetGenre et avoir déjà sa carte
+	havecarteid: &cTu as déjà fait ta carte d'identité fait /%{openidentity}% pour la voir.
+	
+	setnameb: &cTu as déjà défini ton nom mais il te reste ton genre à définir pour obtenir ta carte d'identité. ( /%{setgenrec}% %{1genre}% ou %{2genre}% ou %{3genre}% pour définir ton sexe. )
+	
+	setgenreb: &cTu as déjà défini ton genre mais il te reste ton nom à définir pour obtenir ta carte d'identité. (/%{setnamec}% Nom Prénom pour définir ton nom.)
+	
+	#Message création de carte
+	successnameid: &aBienvenue en ville %{fnameid.%player%}% %{lnameid.%player%}% , fait /%{setgenrec}% %{1genre}% ou %{2genre}% ou %{3genre}% pour définir ton sexe.
+	
+	successgenreid: &aBienvenue en ville , fait /%{setnamec}% Nom Prénom pour définir ton nom.
+	
+	succescarteid: &aVotre carte d'identité viens de vous être remise /%{openidentity}% pour la voir.
+#===========================
+# 		 SCRIPT
+#===========================
+Variables:
+	{carteid.%player%} = false
+	{setgenre.%player%} = false
+	{setname.%player%} = false
+
+on load:
+	set {setnamec} to "{@setname}"
+	set {setgenrec} to "{@setgenre}"
+	set {1genre} to "{@1genre}"
+	set {2genre} to "{@2genre}"
+	set {3genre} to "{@3genre}"
+	set {openidentity} to "{@openidentity}"
+
+command {@openidentity} [<text>] [<offline player>]:
+	trigger:
+		if arg 1 is not set:
+			if player has permission "{@openidentityp}":
+				if {carteid.%player%} is false:
+					if {setgenre.%player%} or {setname.%player%} is false:
+						send "{@nocarteid}"
+					else:
+						send "{@carteidremove}"
+				else:
+					send "{@carteid}"
+					send ""
+					send "{@carteid.info1}"
+					send "{@carteid.info2}"
+					send "{@carteid.info3}"
+			else:
+				send "{@noperm}"
+				
+		if arg 1 is "info":
+			if player has permission "{@infocardplayerp}":
+				loop players in radius 3 around player:
+					set {_list::%loop-player%} to loop-player
+					delete {_list::%player%}
+					size of {_list::*} = 0:
+						send "Aucun Citoyens au alentours"
+						stop
+					else:
+						if {carteid.%{_list::%loop-value%}%} is false:
+							send "{@carteidinfo}"
+							stop
+						else:
+							send "{@carteid1}"
+							send ""
+							send "{@carteid.info1b}"
+							send "{@carteid.info2b}"
+							send "{@carteid.info3b}"
+							stop
+			else:
+				send "{@noperm}"
+				
+		if arg 1 is "{@resetidcardplayer}":
+			if player has permission "{@resetidcardplayerp}":
+				if arg 2 is not set:
+					send "{@namerequest}"
+				else:
+					set {carteid.%arg 2%} to false
+					set {setgenre.%arg 2%} to false
+					set {setname.%arg 2%} to false
+					clear {fnameid.%arg 2%}
+					clear {lnameid.%arg 2%}
+					stop
+					
+		if arg 1 is "{@pickidcardplayer}":
+			if arg 2 is not set:
+				send "{@pickarg2}"
+			else:
+				if player has permission "{@pickidcardplayerp}":
+					loop players in radius 3 around player:
+						set {_list::%loop-player%} to loop-player
+						delete {_list::%player%}
+						size of {_list::*} = 0:
+							send "Le Citoyen n'est pas au alentours"
+							stop
+						else:
+							if {carteid.%{_list::%loop-value%}%} is false:
+								send "{@carteidhaveinfop}"
+								stop
+							else:
+								send "{@picksuccess}"
+								send "{@pickrecive}" to arg 2
+								set {carteid.%arg 2%} to false
+								stop
+				else:
+					send "{@noperm}"
+							
+		if arg 1 is "{@giveidcardplayer}":
+			if arg 2 is not set:
+				send "{@givearg2}"
+			else:
+				if player has permission "{@giveidcardplayerp}":
+					loop players in radius 3 around player:
+						set {_list::%loop-player%} to loop-player
+						delete {_list::%player%}
+						size of {_list::*} = 0:
+							send "Le Citoyen n'est pas au alentours"
+							stop
+						else:
+							if {carteid.%{_list::%loop-value%}%} is true:
+								send "{@carteidhaveinfo}"
+								stop
+							else:
+								send "{@givesuccess}"
+								send "{@giverecive}" to arg 2
+								set {carteid.%arg 2%} to true
+								stop
+				else:
+					send "{@noperm}"
+					
+command {@setname} [<text>] [<text>]:
+	trigger:
+		if {setname.%player%} is true:
+			if {setgenre.%player%} is false:
+				send "{@setnameb}"
+			else:
+				send "{@havecarteid}"
+		else:
+			
+			if arg 1 is not set:
+				send "{@noprenom}"
+			else:
+				if arg 2 is not set:
+					send "{@nonom}"
+				else:					
+					set {fnameid.%player%} to arg 1
+					set {lnameid.%player%} to arg 2
+					set {setname.%player%} to true
+					if {setname.%player%} is true:
+						if {setgenre.%player%} is true:
+							send "{@succescarteid}"
+							set {carteid.%player%} to true
+						else:
+							send "{@successnameid}"
+
+command {@setgenre} [<text>]:
+	trigger:
+		if {setgenre.%player%} is true:
+			if {setname.%player%} is false:
+				send "{@setgenreb}"
+			else:
+				send "{@havecarteid}"
+		else:
+			if arg 1 is not set:
+				send "{@nogenre}"
+			else:		
+				if arg 1 is "{@1genre}" or "{@2genre}" or "{@3genre}":
+					set {genreid.%player%} to arg 1
+					set {setgenre.%player%} to true
+					if {setgenre.%player%} is true:
+						if {setname.%player%} is true:
+							send "{@succescarteid}"
+							set {carteid.%player%} to true
+						else:
+							send "{@successgenreid}"
+				else:
+					send "{@nogenred}"
