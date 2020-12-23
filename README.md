@@ -63,18 +63,18 @@ Screen du script
 
 Quand un habitant n'as pas sa carte
 
-![alt text](image.png.1e197830555fe09984241e00e57518d5.png)
+![alt text](https://i.ibb.co/mv6NfGp/t-l-charger-3.png)
 
 Commande /carteid give (Coté admin)
 
-![alt text](image.png.bf5e23e7ae9e81ae565438450c3d6aec.png)
+![alt text](https://i.ibb.co/sRmVH8s/t-l-charger-2.png)
 
 Commande /carteid give (Coté joueur)
 
-![alt text](image.png.095045b8823c56c9f285ae4afffd3cb1.png)
+![alt text](https://i.ibb.co/Q6gFt50/t-l-charger-1.png)
 
 Carte d'identité
 
-![alt text](image.png.2f4dd3a07c75336c0ce77669511e0d99.png)
+![alt text](https://i.ibb.co/NmydP6Z/t-l-charger.png)
 
 Support: alexistb2904#5339
